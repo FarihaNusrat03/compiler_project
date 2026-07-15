@@ -22,7 +22,13 @@ int current_line = 1;
 
 /* 2. COMMENTS (Must be discarded, not tokenized) */
 "//".* { /* Discard single-line comments */ }
-"/*"([^*]|\*+[^*/])*(\*+)?("*/") { /* Discard multi-line block comments */ }
+/* Count newlines inside block comments to keep line numbers accurate. */
+"/*"([^*]|\n|\*+[^*/])*(\*+)?("*/") {
+    for (int i = 0; yytext[i] != '\0'; i++) {
+        if (yytext[i] == '\n')
+            current_line++;
+    }
+}
 
 /* 3. HEADER FILES / PREPROCESSOR SUPPORT (Bonus Request) */
 "#include"[ \t]*"<"[a-zA-Z0-9_\.]+">" { return HEADER_DIRECTIVE; }
@@ -51,9 +57,9 @@ int current_line = 1;
 [a-zA-Z_][a-zA-Z0-9_]* { return IDENTIFIER; } /* */
 
 /* 7. LITERAL CONSTANTS */
-[0-9]+\.[0-9]+  { return CONST_FLOAT; }       /* Floating-point literal (e.g., 3.14) */
-[0-9]+          { return CONST_INT; }         /* Integer literal (e.g., 42) */
-"\""[^\"]*"\""  { return STRING_LITERAL; }
+[0-9]+\.[0-9]+      { return CONST_FLOAT; }
+[0-9]+              { return CONST_INT; }
+"\""[^\"]*"\""      { return STRING_LITERAL; }
 
 /* 8. OPERATORS */
 "+"             { return '+'; }               
