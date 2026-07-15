@@ -53,6 +53,7 @@ int current_line = 1;
 /* 7. LITERAL CONSTANTS */
 [0-9]+\.[0-9]+  { return CONST_FLOAT; }       /* Floating-point literal (e.g., 3.14) */
 [0-9]+          { return CONST_INT; }         /* Integer literal (e.g., 42) */
+"\""[^\"]*"\""  { return STRING_LITERAL; }
 
 /* 8. OPERATORS */
 "+"             { return '+'; }               
