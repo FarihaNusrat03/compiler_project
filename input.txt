@@ -1,0 +1,7 @@
+//int y = a + b * 2;
+
+int main() {
+    int x = 5;
+    int sum = x + 3;
+    cout << sum << endl;
+}

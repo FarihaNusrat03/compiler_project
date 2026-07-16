@@ -6,6 +6,7 @@
 #include "../ast/ast.h" // Include AST class blueprints to safely hook up tree generation
 
 using namespace std;
+extern ASTNode* global_ast_root;
 
 /* 1. FLEX & BISON CONNECTION */
 
@@ -58,6 +59,7 @@ void yyerror(const char *s) {
 %token KEYWORD_PRINT
 %token KEYWORD_PRINTF
 %token KEYWORD_COUT
+%token KEYWORD_ENDL
 
 /* Constants */
 %token <string_val> CONST_INT
@@ -138,8 +140,16 @@ declaration_list
 /* A declaration can be a header directive or variable declaration. */
 declaration
     : header_directive          { $$ = $1; }
-    | variable_declaration      { $$ = $1; }
     | function                  { $$ = $1; }
+    | type_specifier variable_list SEMICOLON { 
+        VariableDeclNode* decl = new VariableDeclNode($1);
+        vector<ASTNode*>* list = (vector<ASTNode*>*)$2;
+        if (list) {
+            decl->variables = *list;
+            delete list;
+        }
+        $$ = decl;
+    }
     ;
 
 /* Header file declaration */
@@ -194,7 +204,7 @@ variable_declaration
             decl->variables = *list;
             delete list;
         }
-        $$ = decl; // Flatten out the accumulated declaration items into a unified node object
+        $$ = decl; 
     }
     ;
 
@@ -261,16 +271,19 @@ return_statement
 /* Output statements */
 output_statement
     : KEYWORD_PRINT IDENTIFIER SEMICOLON { 
-        $$ = new PrintNode("PRINT", new VariableNode($2)); // Handle raw standalone identifiers
+        $$ = new PrintNode("PRINT", new VariableNode($2)); 
     }
     | KEYWORD_PRINT LPAREN expression RPAREN SEMICOLON { 
-        $$ = new PrintNode("PRINT", $3); // Route complete structured expressions
+        $$ = new PrintNode("PRINT", $3); 
     }
     | KEYWORD_PRINTF LPAREN STRING_LITERAL COMMA expression RPAREN SEMICOLON { 
-        $$ = new PrintNode("PRINTF", $5, $3); // Map the required string literal format tracking data explicitly
+        $$ = new PrintNode("PRINTF", $5, $3); 
     }
     | KEYWORD_COUT STREAM_INSERTION expression SEMICOLON { 
-        $$ = new PrintNode("COUT", $3); // Map standard C++ formatting channels directly
+        $$ = new PrintNode("COUT", $3); 
+    }
+    | KEYWORD_COUT STREAM_INSERTION expression STREAM_INSERTION KEYWORD_ENDL SEMICOLON { 
+        $$ = new PrintNode("COUT", $3); // <--- Add this line to match "cout << sum << endl;"
     }
     ;
     
@@ -317,7 +330,7 @@ if_statement
     : KEYWORD_IF LPAREN expression RPAREN block { 
         $$ = new IfNode($3, $5, nullptr); // Singular condition verification without alternative path execution
     }
-    : KEYWORD_IF LPAREN expression RPAREN block KEYWORD_ELSE block { 
+    | KEYWORD_IF LPAREN expression RPAREN block KEYWORD_ELSE block { 
         $$ = new IfNode($3, $5, $7); // Complete binary branch target construction
     }
     ;
@@ -335,7 +348,6 @@ for_initialization
     : variable_declaration_inline   { $$ = $1; }
     | assignment_expression         { $$ = $1; }
     | /* empty initialization */    { $$ = nullptr; }
-    | %empty                        { $$ = nullptr; }
     ;
 
 for_statement
@@ -368,16 +380,28 @@ parameter_list
     ;
 
 function
-    : return_type IDENTIFIER LPAREN parameter_list RPAREN block { 
+    : type_specifier IDENTIFIER LPAREN parameter_list RPAREN block { 
         FunctionNode* func = new FunctionNode($1, $2, $6);
         vector<ASTNode*>* list = (vector<ASTNode*>*)$4;
         if (list) {
             func->parameters = *list;
             delete list;
         }
-        $$ = func; // Instantiate complete signature blueprints for structured functional tracking objects
+        $$ = func; 
     }
-    : return_type IDENTIFIER LPAREN RPAREN block { 
-        $$ = new FunctionNode($1, $2, $5); // Simplify instantiation routines for parameterless scopes
+    | KEYWORD_VOID IDENTIFIER LPAREN parameter_list RPAREN block { 
+        FunctionNode* func = new FunctionNode((char*)"void", $2, $6);
+        vector<ASTNode*>* list = (vector<ASTNode*>*)$4;
+        if (list) {
+            func->parameters = *list;
+            delete list;
+        }
+        $$ = func; 
+    }
+    | type_specifier IDENTIFIER LPAREN RPAREN block { 
+        $$ = new FunctionNode($1, $2, $5); 
+    }
+    | KEYWORD_VOID IDENTIFIER LPAREN RPAREN block { 
+        $$ = new FunctionNode((char*)"void", $2, $5); 
     }
     ;
