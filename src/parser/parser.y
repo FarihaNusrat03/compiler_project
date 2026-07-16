@@ -20,7 +20,9 @@ extern char *yytext;
 extern FILE *yyin;
 
 /* Syntax error handling function called automatically by Bison. */
-void yyerror(const char *s);
+void yyerror(const char *s) {
+    fprintf(stderr, "Syntax Error on Line %d: %s at token '%s'\n", current_line, s, yytext);
+}
 
 %}
 
@@ -124,9 +126,6 @@ type_specifier
     | KEYWORD_BOOL
     ;
 
-
-
-
 variable
     : IDENTIFIER
     | IDENTIFIER ASSIGN expression
@@ -147,7 +146,9 @@ variable_declaration
     : type_specifier variable_list SEMICOLON
     ;
 
-
+variable_declaration_inline
+    : type_specifier variable_list
+    ;
 
 /* 6. EXPRESSIONS */
 
@@ -186,7 +187,6 @@ assignment_expression
     : IDENTIFIER ASSIGN expression
     ;
 
-
 /* A return statement sends a value back from a function. */
 return_statement
     : KEYWORD_RETURN expression SEMICOLON
@@ -195,8 +195,9 @@ return_statement
 
 /* Output statements */
 output_statement
-    : KEYWORD_PRINTF LPAREN expression RPAREN SEMICOLON
+    : KEYWORD_PRINT IDENTIFIER SEMICOLON
     | KEYWORD_PRINT LPAREN expression RPAREN SEMICOLON
+    | KEYWORD_PRINTF LPAREN STRING_LITERAL COMMA expression RPAREN SEMICOLON
     | KEYWORD_COUT STREAM_INSERTION expression SEMICOLON
     ;
     
@@ -220,6 +221,7 @@ statement
     | for_statement
     | output_statement
     | empty_statement
+    | error SEMICOLON { yyerrok; } /* Standard Bison syntax error recovery rule */
     ;
 statement_list
     : statement
@@ -240,8 +242,10 @@ while_statement
 /* For loop contains initialization, condition,
    update expression, and body. */
 for_initialization
-    : variable_declaration
+    : variable_declaration_inline 
     | assignment_expression
+    | /* empty initialization */
+    | %empty
     ;
 for_statement
     : KEYWORD_FOR LPAREN for_initialization SEMICOLON expression SEMICOLON assignment_expression RPAREN block
