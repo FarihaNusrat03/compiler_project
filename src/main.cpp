@@ -14,6 +14,10 @@ extern FILE* yyin;
 /* Link the global AST root tracking pointer we created in ast.cpp */
 extern ASTNode* global_ast_root;
 
+/* Access the lexical error counter from lexer.l */
+extern int lexical_error_count;
+extern int syntax_error_count;
+
 int main(int argc, char* argv[]) {
 
     if (argc > 1) {
@@ -34,8 +38,8 @@ int main(int argc, char* argv[]) {
     if (yyin)
         fclose(yyin);
 
-    // 5. Check if the parser encountered any syntax rule breakages
-    if (parse_result == 0) {
+    // 5. Check for both syntax errors AND lexical errors
+    if (parse_result == 0 && lexical_error_count == 0 && syntax_error_count == 0) {
         cout << "\nParsing completed successfully!\n\n";
         
         // Ensure our Abstract Syntax Tree root node exists before trying to print it
@@ -52,7 +56,7 @@ int main(int argc, char* argv[]) {
             cout << "Warning: Parsing succeeded but no AST root was generated.\n";
         }
     } else {
-        cerr << "\nParsing failed due to syntax errors.\n";
+        cerr << "\nParsing failed due to errors.\n";
         return 1;
     }
 

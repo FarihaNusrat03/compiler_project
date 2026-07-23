@@ -22,10 +22,15 @@ extern char *yytext;
 /* Input file pointer used by the lexer. */
 extern FILE *yyin;
 
+int syntax_error_count = 0;
+
 /* Syntax error handling function called automatically by Bison. */
 void yyerror(const char *s) {
     fprintf(stderr, "Syntax Error on Line %d: %s at token '%s'\n", current_line, s, yytext);
+    syntax_error_count++;
+    exit(1);
 }
+
 
 %}
 
@@ -270,8 +275,8 @@ return_statement
 
 /* Output statements */
 output_statement
-    : KEYWORD_PRINT IDENTIFIER SEMICOLON { 
-        $$ = new PrintNode("PRINT", new VariableNode($2)); 
+    : KEYWORD_PRINT expression SEMICOLON { 
+        $$ = new PrintNode("PRINT", $2);
     }
     | KEYWORD_PRINT LPAREN expression RPAREN SEMICOLON { 
         $$ = new PrintNode("PRINT", $3); 
@@ -293,7 +298,7 @@ empty_statement
 
 block
     : LBRACE statement_list RBRACE  { $$ = $2; }
-    | LBRACE RBRACE                 { $$ = new BlockNode(); } // Handle blank braces gracefully by allocating an empty BlockNode
+    | LBRACE RBRACE                 { $$ = new BlockNode(); } // Handle blank braces by allocating an empty BlockNode
     ;
 
 /* 7. STATEMENTS */

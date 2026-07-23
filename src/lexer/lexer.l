@@ -8,6 +8,7 @@
 using namespace std;
 
 int current_line = 1; 
+int lexical_error_count = 0; //Track lexical errors
 
 //Simple safe custom duplicate function to completely bypass the Windows MinGW scope issue
 char* custom_strdup(const char* src) {
@@ -88,6 +89,9 @@ char* custom_strdup(const char* src) {
 "("             { return LPAREN; }            
 ")"             { return RPAREN; }             
 
-.               { printf("Lexical Error on Line %d: Unrecognized character token '%s'\n", current_line, yytext); }
+.               { 
+                  printf("Lexical Error on Line %d: Unrecognized character token '%s'\n", current_line, yytext); 
+                  lexical_error_count++; // 🌟 ADD THIS: Increment counter on invalid token
+                   }
 
 %%

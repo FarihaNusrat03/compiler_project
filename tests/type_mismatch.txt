@@ -1,3 +1,9 @@
+#include <stdio.h>
+
+int main() {
+
 bool flag;
 
 flag = 5 + 3;
+
+}

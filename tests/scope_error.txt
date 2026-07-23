@@ -1,6 +1,12 @@
+#include <stdio.h>
+
+int main() {
+
 if(true)
 {
     int x;
 }
 
 x = 5;
+
+}

@@ -24,11 +24,11 @@ int main()
 
     if(flag && x > 0)
     {
-        print x;
+        cout<<x<<endl;
     }
     else
     {
-        print 0;
+        cout<<0<<endl;
     }
 
     while(x > 0)

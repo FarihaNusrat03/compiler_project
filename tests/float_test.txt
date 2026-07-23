@@ -1,3 +1,7 @@
+#include <stdio.h>
+
+int main() {
+
 float pi;
 float radius;
 float area;
@@ -7,3 +11,4 @@ radius = 5.5;
 area = pi * radius * radius;
 
 print area;
+}

@@ -1,4 +1,6 @@
-#include<iostream>
+#include <stdio.h>
+
+int main() {
 
 int x;
 int y;
@@ -21,4 +23,6 @@ if (flag == true)
 else
 {
     print x;
+}
+
 }
