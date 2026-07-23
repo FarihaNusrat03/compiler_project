@@ -15,25 +15,24 @@ extern FILE* yyin;
 extern ASTNode* global_ast_root;
 
 int main(int argc, char* argv[]) {
-    // 1. Open your code test file (input.txt) in read-only mode
-    FILE* infile = fopen("input.txt", "r");
-    if (!infile) {
-        cerr << "Error: Could not open input.txt file!\n";
-        return 1;
-    }
 
-    // 2. Tell the lexer to read text from input.txt instead of the console terminal
-    yyin = infile;
+    if (argc > 1) {
+        yyin = fopen(argv[1], "r");
+
+        if (!yyin) {
+            cerr << "Error: Could not open file!\n";
+            return 1;
+        }
+    }
 
     cout << "=======================================\n";
     cout << "         Starting Compiler Parser      \n";
     cout << "=======================================\n";
 
-    // 3. Trigger the parser to analyze the tokens and build the AST structures
     int parse_result = yyparse();
 
-    // 4. Close the file stream since we are done reading
-    fclose(infile);
+    if (yyin)
+        fclose(yyin);
 
     // 5. Check if the parser encountered any syntax rule breakages
     if (parse_result == 0) {

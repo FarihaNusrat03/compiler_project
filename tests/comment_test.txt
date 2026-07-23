@@ -1,0 +1,10 @@
+// Single line comment
+
+int x;
+
+/* Multi-line
+   comment */
+
+x = 5;
+
+print x;

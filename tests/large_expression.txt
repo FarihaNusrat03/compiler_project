@@ -1,0 +1,12 @@
+int a;
+int b;
+int c;
+int d;
+
+a = 5;
+b = 10;
+c = 3;
+
+d = (a + b) * c - a / c + b % c;
+
+print d;

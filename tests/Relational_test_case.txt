@@ -1,0 +1,35 @@
+int a;
+int b;
+
+a = 10;
+b = 20;
+
+if(a < b)
+{
+    print a;
+}
+
+if(a <= b)
+{
+    print a;
+}
+
+if(a > b)
+{
+    print b;
+}
+
+if(a >= b)
+{
+    print b;
+}
+
+if(a == b)
+{
+    print a;
+}
+
+if(a != b)
+{
+    print b;
+}

@@ -1,0 +1,9 @@
+float pi;
+float radius;
+float area;
+
+pi = 3.1416;
+radius = 5.5;
+area = pi * radius * radius;
+
+print area;

@@ -26,3 +26,12 @@ ifeq ($(OS),Windows_NT)
 else
 	rm -f src/lexer/lex.yy.c src/parser/parser.tab.c src/parser/parser.tab.h $(TARGET)
 endif
+
+test:
+	@for file in tests/*.txt; do \
+		echo "=============================="; \
+		echo "Running $$file"; \
+		echo "=============================="; \
+		./$(TARGET) < $$file; \
+		echo ""; \
+	done

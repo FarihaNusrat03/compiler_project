@@ -1,0 +1,20 @@
+bool a;
+bool b;
+
+a = true;
+b = false;
+
+if(a && b)
+{
+    print 1;
+}
+
+if(a || b)
+{
+    print 2;
+}
+
+if(!b)
+{
+    print 3;
+}
