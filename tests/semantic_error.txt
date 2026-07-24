@@ -1,0 +1,24 @@
+#include <stdio.h>
+
+int main() {
+    int x;
+    bool flag;
+
+    // Semantic Error 1: Redeclaration of variable 'x' in the same scope
+    int x;
+
+    // Semantic Error 2: Use of undeclared variable 'y'
+    y = 10;
+
+    // Semantic Error 3: Type Mismatch (assigning integer addition to a boolean)
+    flag = 5 + 3;
+
+    // Semantic Error 4: Scope Error ('insideVar' is used out of scope)
+    if (1) {
+        int insideVar;
+        insideVar = 20;
+    }
+    insideVar = 30;
+
+    return 0;
+}

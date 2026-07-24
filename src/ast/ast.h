@@ -169,17 +169,13 @@ public:
 /* Output statements (handles print y;, printf("...", x); and cout << x;). */
 class PrintNode : public ASTNode {
 public:
-    /* Identifies the statement format variant: "PRINT", "PRINTF", or "COUT". */
     string print_type;
-    
-    /* Stores the C-style pattern string if using standard printf specifiers. */
-    string format_string;
-    
-    /* Pointer to the expression node target containing the value to be output. */
-    ASTNode* target;
+    string format_string; // Declared first
+    ASTNode* target;      // Declared second
 
+    // Initialized in exact order: print_type, format_string, target
     PrintNode(const string& type, ASTNode* tgt, const string& fmt = "") 
-        : print_type(type), target(tgt), format_string(fmt) {}
+        : print_type(type), format_string(fmt), target(tgt) {} 
         
     void print(int indent) override {
         printIndent(indent);

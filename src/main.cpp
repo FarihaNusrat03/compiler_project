@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "ast/ast.h" // Lets us access the AST node blueprints and printing tools
-
+#include "semantic/semantic.h" // <-- UPDATE 1: Added semantic header here!
 using namespace std;
 
 /* Link the Bison parser logic tool */
@@ -52,6 +52,21 @@ int main(int argc, char* argv[]) {
             global_ast_root->print(0);
             
             cout << "=======================================\n";
+        
+        cout << "\n=======================================\n";
+            cout << "           Semantic Analysis           \n";
+            cout << "=======================================\n";
+
+            SemanticAnalyzer analyzer;
+            bool success = analyzer.analyze(global_ast_root);
+
+            if (success) {
+                cout << "\nSemantic Analysis Passed with 0 Errors!\n";
+            } else {
+                cout << "\nSemantic Analysis Failed with " << analyzer.getErrorCount() << " error(s).\n";
+            }
+        
+        
         } else {
             cout << "Warning: Parsing succeeded but no AST root was generated.\n";
         }
